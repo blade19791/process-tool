@@ -59,24 +59,3 @@ A standalone animation that renders `Progress: [████░░░░░░] 
 | `main.js`       | CLI entry point, spawns/execs/execFiles/forks |
 | `worker.js`     | Forked child that sums numbers via IPC   |
 | `progressbar.js`| Standalone progress-bar animation        |
-
-## Git conventions
-
-This repo uses [Conventional Commits](https://www.conventionalcommits.org/): every commit message is `type(scope): subject`, followed by an optional body and footer.
-
-```text
-feat(worker): report progress via IPC
-fix(main): handle nonzero exit codes
-docs(readme): add usage examples
-refactor(main): extract ping into own function
-```
-
-| Type      | When to use                              |
-| --------- | ---------------------------------------- |
-| `feat`    | new command or feature                   |
-| `fix`     | bug fix                                  |
-| `docs`    | documentation only                       |
-| `refactor`| code change with no behavior change      |
-| `test`    | adding or updating tests                 |
-
-Write the subject as an imperative sentence (e.g. "add usage examples", not "added usage examples") and keep it under ~50 characters. Skip the `(scope)` when it adds nothing.
