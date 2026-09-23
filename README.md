@@ -3,7 +3,8 @@
 A small CLI utility for learning the Node.js `child_process` module. It demonstrates the three main ways to run tasks outside the main Node.js process:
 
 - **`spawn`** – streaming external commands
-- **`exec`** – running a command and buffering its output
+- **`exec`** – running a command through the shell and buffering its output
+- **`execFile`** – running an executable directly (no shell) and buffering its output
 - **`fork`** – running another JS module in a separate process with IPC messaging
 
 ## Setup
@@ -18,6 +19,7 @@ node main.js --help
 ```bash
 node main.js processes              # list running processes (spawns `ps aux`)
 node main.js info                   # system info (execs `uname -a`)
+node main.js node-info              # node version (execFiles `node --version`)
 node main.js ping [host]            # ping a host, default google.com (spawn)
 node main.js worker [limit]         # sum 1..N in a forked child process
 node main.js git-status             # run `git status` (exec)
@@ -25,10 +27,11 @@ node main.js git-status             # run `git status` (exec)
 
 ## How it works
 
-### `spawn` / `exec` (`main.js`)
+### `spawn` / `exec` / `execFile` (`main.js`)
 
 - `processes` and `ping` use `spawn`, which streams `stdout`/`stderr` events as they arrive — good for long-running or chatty commands.
-- `info` and `git-status` use `exec`, which buffers the whole output and delivers it through a callback — good for quick commands where you want the full result at once.
+- `info` and `git-status` use `exec`, which runs the command through a shell, buffers the whole output, and delivers it via a callback.
+- `node-info` uses `execFile`, which runs an executable **without a shell** — safer (no shell injection, no shell-specific syntax) and slightly faster. It also buffers the output into a callback, so use it when you know the exact executable and args up front.
 
 ### `fork` example (`main.js` + `worker.js`)
 
@@ -53,7 +56,7 @@ A standalone animation that renders `Progress: [████░░░░░░] 
 
 | File            | Purpose                                  |
 | --------------- | ---------------------------------------- |
-| `main.js`       | CLI entry point, spawns/execs/forks      |
+| `main.js`       | CLI entry point, spawns/execs/execFiles/forks |
 | `worker.js`     | Forked child that sums numbers via IPC   |
 | `progressbar.js`| Standalone progress-bar animation        |
 

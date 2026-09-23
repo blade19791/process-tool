@@ -1,4 +1,4 @@
-import { spawn, exec, fork } from "node:child_process";
+import { spawn, exec, execFile, fork } from "node:child_process";
 
 const args = process.argv.slice(2);
 
@@ -14,6 +14,9 @@ switch (args[0]) {
 
   case "info":
     info();
+    break;
+  case "node-info":
+    nodeInfo();
     break;
   case "ping":
     ping(args[1]);
@@ -55,6 +58,16 @@ function info() {
     if (stderr) return console.error("stderr: ", error);
 
     console.log("SYSTEM INFORMATION: ");
+    console.log(stdout);
+  });
+}
+
+function nodeInfo() {
+  execFile("node", ["--version"], (error, stdout, stderr) => {
+    if (error) return console.error("Error: ", error);
+    if (stderr) return console.error("stderr: ", stderr);
+
+    console.log("NODE VERSION: ");
     console.log(stdout);
   });
 }
