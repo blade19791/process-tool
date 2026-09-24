@@ -22,3 +22,4 @@ process.on("message", async ({ id, limit }) => {
   process.send({ id, type: "done", result: sum });
   process.exit(0);
 });
+

@@ -1,4 +1,5 @@
 import { spawn, exec, execFile, fork } from "node:child_process";
+import { isValidIPv4, isValidHostname } from "./validator.js";
 
 const args = process.argv.slice(2);
 
@@ -74,6 +75,8 @@ function nodeInfo() {
 
 function ping(host) {
   host ||= "google.com";
+  validateHost(host);
+
   const child = spawn("ping", [host]);
 
   child.stdout.on("data", (data) => {
@@ -111,8 +114,12 @@ function worker(limit) {
     },
   );
 
-  child.on("exit", (code) => {
-    console.log("Process exit with code: ", code);
+  child.on("exit", (code, signal) => {
+    console.log(`Process exit with code: ${code}, signal: ${signal}`);
+  });
+
+  child.on("error", (err) => {
+    console.error("Worker error event:", err.message);
   });
 
   child.send({ id: 0, limit: Number(limit) });
@@ -126,4 +133,20 @@ function gitStatus() {
     console.log("GIT STATUS: ");
     console.log(stdout);
   });
+}
+
+function handleShutdown(signal) {
+  console.log(`Received ${signal}. Shutting down gracefully...`);
+  process.exit(0);
+}
+
+["SIGINT", "SIGTERM"].forEach((signal) => {
+  process.on(signal, () => handleShutdown(signal));
+});
+
+function validateHost(host) {
+  if (!isValidHostname(host) && !isValidIPv4(host)) {
+    console.error("Invalid hostname or IP address.");
+    process.exit(1);
+  }
 }
